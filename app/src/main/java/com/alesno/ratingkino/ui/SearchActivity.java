@@ -3,7 +3,9 @@ package com.alesno.ratingkino.ui;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.alesno.ratingkino.R;
@@ -18,6 +20,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class SearchActivity extends AppCompatActivity implements SearchMVP.SearchView {
 
+    @BindView(R.id.progress_bar) ProgressBar mProgressBar;
     @BindView(R.id.edit_input) EditText mEditInput;
     @BindView(R.id.text_result) TextView mTextResult;
 
@@ -55,6 +58,16 @@ public class SearchActivity extends AppCompatActivity implements SearchMVP.Searc
     @Override
     public void setResult(String result) {
         mTextResult.setText(result);
+    }
+
+    @Override
+    public void showProgressBar() {
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideProgressBar() {
+        mProgressBar.setVisibility(View.INVISIBLE);
     }
 
     @Override

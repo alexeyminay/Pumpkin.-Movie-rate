@@ -3,6 +3,7 @@ package com.alesno.ratingkino.ui;
 import android.util.Log;
 
 import com.alesno.ratingkino.base.BasePresenter;
+import com.alesno.ratingkino.model.Rating;
 import com.alesno.ratingkino.network.KinopoiskParser;
 import com.alesno.ratingkino.network.KinopoiskRatingRepository;
 
@@ -36,10 +37,12 @@ public class SearchPresenter extends BasePresenter<SearchMVP.SearchView> impleme
 
     @Override
     public void onButtonClicked() {
+        getView().setResult("");
+        getView().showProgressBar();
         mQueryDisposable = Single.fromCallable(() -> mKinopoiskParser.getIdFilm(getView().getMovieName()))
                 .subscribeOn(mSubscribeScheduler)
                 .observeOn(mResultScheduler)
-                .subscribe(this::showRating,
+                .subscribe(this::getRating,
                         throwable -> Log.e("mLog", throwable.getMessage(), throwable));
     }
 
@@ -50,11 +53,22 @@ public class SearchPresenter extends BasePresenter<SearchMVP.SearchView> impleme
             mQueryDisposable.dispose();
     }
 
-    private void showRating(String idFilm){
-        mQueryDisposable = Single.fromCallable(() -> mKinopoiskRatingService.getHTMLPage(idFilm))
-                .subscribeOn(mSubscribeScheduler)
+    private void getRating(String idFilm){
+        mQueryDisposable = mKinopoiskRatingService
+                .getHTMLPage(idFilm).subscribeOn(mSubscribeScheduler)
                 .observeOn(mResultScheduler)
-                .subscribe(s -> getView().setResult(String.valueOf(s)),
+                .subscribe(rating -> showRating(rating),
                         throwable -> Log.e("mLog", throwable.getMessage(), throwable));
+    }
+
+    private void showRating(Rating rating) {
+        StringBuilder result = new StringBuilder();
+        result.append("Kinopoisk: ")
+                .append(rating.getRatingKinopoisk())
+                .append(",\n")
+                .append("IMDb: ")
+                .append(rating.getRatingIMDb());
+        getView().hideProgressBar();
+        getView().setResult(result.toString());
     }
 }

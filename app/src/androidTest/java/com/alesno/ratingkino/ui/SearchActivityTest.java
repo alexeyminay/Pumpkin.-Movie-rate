@@ -34,7 +34,15 @@ public class SearchActivityTest {
         onView(withId(R.id.edit_input)).perform(replaceText(requestFilm));
         onView(withId(R.id.button_search)).perform(click());
         onView(isRoot()).perform(waitFor(3000));
-        onView(withId(R.id.text_result)).check(matches(withText("435")));
+
+        StringBuilder result = new StringBuilder();
+        result.append("Kinopoisk: ")
+                .append(9.061)
+                .append(",\n")
+                .append("IMDb: ")
+                .append(8.6);
+
+        onView(withId(R.id.text_result)).check(matches(withText(result.toString())));
 
     }
 

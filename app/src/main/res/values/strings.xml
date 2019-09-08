@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">RatingKino</string>
+    <string name="input_movie_name">Введите название фильма</string>
+</resources>

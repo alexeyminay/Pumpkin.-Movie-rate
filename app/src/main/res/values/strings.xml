@@ -4,4 +4,5 @@
     <string name="input_year">Введите год(не обязательно)</string>
     <string name="rate_of_films">Тыква. Рейтинг Фильмов</string>
     <string name="movie_is_not_find">Фильм не найден, проверьте запрос!</string>
+    <string name="search">Искать!</string>
 </resources>

@@ -2,15 +2,22 @@ package com.alesno.ratingkino.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.animation.Animator;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.alesno.ratingkino.App.App;
 import com.alesno.ratingkino.R;
+import com.alesno.ratingkino.utils.MyAnimatorListener;
 import com.google.android.material.snackbar.Snackbar;
 
 import javax.inject.Inject;
@@ -25,6 +32,7 @@ public class SearchActivity extends AppCompatActivity implements SearchMVP.Searc
     @BindView(R.id.edit_input_name) EditText mEditInputName;
     @BindView(R.id.edit_input_years) EditText mEditInputYear;
     @BindView(R.id.text_result) TextView mTextResult;
+    @BindView(R.id.button_search) Button mButtonSearch;
 
     @Inject SearchPresenter mPresenter;
 
@@ -80,6 +88,45 @@ public class SearchActivity extends AppCompatActivity implements SearchMVP.Searc
     public void hideProgressBar() {
         mProgressBar.setVisibility(View.INVISIBLE);
     }
+
+    @Override
+    public void setClickableButton(boolean isClickable) {
+        mButtonSearch.setClickable(isClickable);
+    }
+
+    @Override
+    public void startCircularButtonRevealAnimation(int centerX, int centerY,
+                                                   int startRadius, int endRadius,
+                                                   int duration,
+                                                   int visibilityViewStat) {
+        mButtonSearch.setVisibility(View.VISIBLE);
+        Animator circularReveal = ViewAnimationUtils.createCircularReveal(
+                mButtonSearch,
+                centerX,
+                centerY,
+                startRadius,
+                endRadius);
+        circularReveal.setDuration(duration);
+        circularReveal.setInterpolator(new AccelerateDecelerateInterpolator());
+        circularReveal.start();
+        circularReveal.addListener(new MyAnimatorListener() {
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                mButtonSearch.setVisibility(visibilityViewStat);
+            }
+        });
+    }
+
+    @Override
+    public int getButtonWidth() {
+        return mButtonSearch.getWidth();
+    }
+
+    @Override
+    public int getButtonHeight() {
+        return mButtonSearch.getHeight();
+    }
+
 
     @Override
     protected void onDestroy() {

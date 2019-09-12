@@ -1,6 +1,7 @@
 package com.alesno.ratingkino.ui;
 
 import android.util.Log;
+import android.view.View;
 
 import com.alesno.ratingkino.R;
 import com.alesno.ratingkino.base.BasePresenter;
@@ -24,6 +25,9 @@ public class SearchPresenter extends BasePresenter<SearchMVP.SearchView> impleme
     private Scheduler mSubscribeScheduler;
     private Scheduler mResultScheduler;
     private Rating mRating;
+
+    public static final int MIN_BUTTON_ANIMATION_SIZE = 16;
+    public static final int DURATION_REVEAL_ANIMATION = 500;
 
     public SearchPresenter(KinopoiskHTMLParser kinopoiskParser,
                            KinopoiskRatingRepository.KinopoiskRatingService mKinopoiskRatingService,
@@ -49,19 +53,20 @@ public class SearchPresenter extends BasePresenter<SearchMVP.SearchView> impleme
             return;
         }
 
+        startCloseButtonRevealAnimation();
+
         getView().setResult("");
         getView().showProgressBar();
         getView().hideKeyboard();
+        getView().setClickableButton(false);
 
         mQueryDisposable = Completable.fromCallable((Callable<Void>) () -> {
             mKinopoiskParser.getHtmlPage(new Movie(getView().getMovieName(), getView().getYear()));
             return null;
         }).subscribeOn(mSubscribeScheduler)
                 .observeOn(mResultScheduler)
-                .subscribe(() -> getRating(mKinopoiskParser.getIdFilm()), throwable -> {
-                    getView().hideProgressBar();
-                    getView().showErrorSnackBar(R.string.movie_is_not_find);
-                });
+                .subscribe(() -> getRating(mKinopoiskParser.getIdFilm())
+                        , throwable -> showFailResult());
     }
 
     @Override
@@ -71,6 +76,13 @@ public class SearchPresenter extends BasePresenter<SearchMVP.SearchView> impleme
             mQueryDisposable.dispose();
     }
 
+    private void showFailResult(){
+        startOpenButtonRevealAnimation();
+        getView().hideProgressBar();
+        getView().setClickableButton(true);
+        getView().showErrorSnackBar(R.string.movie_is_not_find);
+    }
+
     private void getRating(String idFilm){
         mQueryDisposable = mKinopoiskRatingService
                 .getHTMLPage(idFilm).subscribeOn(mSubscribeScheduler)
@@ -78,10 +90,7 @@ public class SearchPresenter extends BasePresenter<SearchMVP.SearchView> impleme
                 .subscribe(rating -> {
                             this.mRating = rating;
                             showRating();
-                        }, throwable -> {
-                    getView().hideProgressBar();
-                    getView().showErrorSnackBar(R.string.movie_is_not_find);
-                });
+                        }, throwable -> showFailResult());
     }
 
     private void showRating() {
@@ -97,7 +106,27 @@ public class SearchPresenter extends BasePresenter<SearchMVP.SearchView> impleme
                 .append("Год фильма: ")
                 .append(mKinopoiskParser.getFilmYear());
 
+        startOpenButtonRevealAnimation();
         getView().hideProgressBar();
+        getView().setClickableButton(true);
         getView().setResult(result.toString());
+    }
+
+    private void startOpenButtonRevealAnimation(){
+        getView().startCircularButtonRevealAnimation(getView().getButtonWidth()/2,
+                getView().getButtonHeight()/2,
+                MIN_BUTTON_ANIMATION_SIZE,
+                getView().getButtonWidth(),
+                DURATION_REVEAL_ANIMATION,
+                View.VISIBLE);
+    }
+
+    private void startCloseButtonRevealAnimation(){
+        getView().startCircularButtonRevealAnimation(getView().getButtonWidth()/2,
+                getView().getButtonHeight()/2,
+                getView().getButtonWidth(),
+                MIN_BUTTON_ANIMATION_SIZE,
+                DURATION_REVEAL_ANIMATION,
+                View.INVISIBLE);
     }
 }

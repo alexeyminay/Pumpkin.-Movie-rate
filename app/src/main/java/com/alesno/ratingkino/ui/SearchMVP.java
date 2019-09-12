@@ -13,6 +13,11 @@ public interface SearchMVP {
         void hideKeyboard();
         void showProgressBar();
         void hideProgressBar();
+        void setClickableButton(boolean isClickable);
+        void startCircularButtonRevealAnimation(int centerX, int centerY
+                , int startRadius, int endRadius, int duration, int visibilityViewStat);
+        int getButtonWidth();
+        int getButtonHeight();
     }
 
     interface SearchPresenter extends Presenter<SearchView>{

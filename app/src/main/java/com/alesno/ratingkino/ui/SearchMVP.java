@@ -8,6 +8,7 @@ public interface SearchMVP {
     interface SearchView extends View {
         String getMovieName();
         String getYear();
+        void showErrorSnackBar(int resource);
         void setResult(String result);
         void hideKeyboard();
         void showProgressBar();

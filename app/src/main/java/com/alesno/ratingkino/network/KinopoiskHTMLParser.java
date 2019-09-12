@@ -29,13 +29,21 @@ public class KinopoiskHTMLParser {
     }
 
     public String getIdFilm(){
-        String dataByAttribute = String.valueOf(getDocument()
-                .getElementsByAttribute("data-id").get(0));
-        return dataByAttribute.split("\"")[7];
-
+        if (!getDocument()
+                .getElementsByAttribute("data-id").isEmpty()) {
+            String dataByAttribute = String.valueOf(getDocument()
+                    .getElementsByAttribute("data-id").get(0));
+            return dataByAttribute.split("\"")[7];
+        }else {
+            return null;
+        }
     }
 
     public String getFilmYear(){
         return getDocument().getElementsByClass("year").get(0).ownText();
+    }
+
+    public String getFilmName(){
+        return getDocument().getElementsByClass("gray").get(0).ownText();
     }
 }

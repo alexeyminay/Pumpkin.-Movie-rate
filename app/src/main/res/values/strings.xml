@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">RatingKino</string>
-    <string name="input_movie_name">Введите название фильма</string>
+    <string name="app_name">Тыква. Рейтинг Фильмов</string>
+    <string name="input_movie_name">Введите название фильма!</string>
     <string name="input_year">Введите год(не обязательно)</string>
-    <string name="rate_of_films">Рейтинг фильмов</string>
+    <string name="rate_of_films">Тыква. Рейтинг Фильмов</string>
+    <string name="movie_is_not_find">Фильм не найден, проверьте запрос!</string>
 </resources>

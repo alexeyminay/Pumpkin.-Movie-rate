@@ -2,6 +2,7 @@ package com.alesno.ratingkino.ui;
 
 import android.util.Log;
 
+import com.alesno.ratingkino.R;
 import com.alesno.ratingkino.base.BasePresenter;
 import com.alesno.ratingkino.model.Movie;
 import com.alesno.ratingkino.model.Rating;
@@ -42,6 +43,12 @@ public class SearchPresenter extends BasePresenter<SearchMVP.SearchView> impleme
 
     @Override
     public void onButtonClicked() {
+        if(getView().getMovieName().isEmpty()){
+            getView().hideKeyboard();
+            getView().showErrorSnackBar(R.string.input_movie_name);
+            return;
+        }
+
         getView().setResult("");
         getView().showProgressBar();
         getView().hideKeyboard();
@@ -51,7 +58,10 @@ public class SearchPresenter extends BasePresenter<SearchMVP.SearchView> impleme
             return null;
         }).subscribeOn(mSubscribeScheduler)
                 .observeOn(mResultScheduler)
-                .subscribe(() -> getRating(mKinopoiskParser.getIdFilm()));
+                .subscribe(() -> getRating(mKinopoiskParser.getIdFilm()), throwable -> {
+                    getView().hideProgressBar();
+                    getView().showErrorSnackBar(R.string.movie_is_not_find);
+                });
     }
 
     @Override
@@ -68,13 +78,17 @@ public class SearchPresenter extends BasePresenter<SearchMVP.SearchView> impleme
                 .subscribe(rating -> {
                             this.mRating = rating;
                             showRating();
-                        },
-                        throwable -> Log.e("mLog", throwable.getMessage(), throwable));
+                        }, throwable -> {
+                    getView().hideProgressBar();
+                    getView().showErrorSnackBar(R.string.movie_is_not_find);
+                });
     }
 
     private void showRating() {
-        StringBuilder result = new StringBuilder();
-        result.append("Kinopoisk: ")
+        StringBuilder result = new StringBuilder("Результаты поиска: \n");
+        result.append(mKinopoiskParser.getFilmName())
+                .append(",\n")
+                .append("Kinopoisk: ")
                 .append(mRating.getRatingKinopoisk())
                 .append(",\n")
                 .append("IMDb: ")
@@ -82,6 +96,7 @@ public class SearchPresenter extends BasePresenter<SearchMVP.SearchView> impleme
                 .append(",\n")
                 .append("Год фильма: ")
                 .append(mKinopoiskParser.getFilmYear());
+
         getView().hideProgressBar();
         getView().setResult(result.toString());
     }

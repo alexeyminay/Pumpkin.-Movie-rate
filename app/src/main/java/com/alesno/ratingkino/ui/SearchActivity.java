@@ -11,16 +11,13 @@ import android.widget.TextView;
 
 import com.alesno.ratingkino.App.App;
 import com.alesno.ratingkino.R;
-import com.alesno.ratingkino.network.KinopoiskHTMLParser;
-import com.alesno.ratingkino.network.KinopoiskRatingRepository;
+import com.google.android.material.snackbar.Snackbar;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 public class SearchActivity extends AppCompatActivity implements SearchMVP.SearchView {
 
@@ -59,6 +56,11 @@ public class SearchActivity extends AppCompatActivity implements SearchMVP.Searc
     }
 
     @Override
+    public void showErrorSnackBar(int resource) {
+        Snackbar.make(mEditInputName, getResources().getString(resource), Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void setResult(String result) {
         mTextResult.setText(result);
     }
@@ -68,7 +70,7 @@ public class SearchActivity extends AppCompatActivity implements SearchMVP.Searc
         InputMethodManager inputManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         inputManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
     }
-    
+
     @Override
     public void showProgressBar() {
         mProgressBar.setVisibility(View.VISIBLE);

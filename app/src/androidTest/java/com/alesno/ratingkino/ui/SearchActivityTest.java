@@ -38,7 +38,10 @@ public class SearchActivityTest {
                 .append(9.061)
                 .append(",\n")
                 .append("IMDb: ")
-                .append(8.6);
+                .append(8.6)
+                .append(",\n")
+                .append("Год фильма: ")
+                .append(1999);
 
         onView(withId(R.id.text_result)).check(matches(withText(result.toString())));
 

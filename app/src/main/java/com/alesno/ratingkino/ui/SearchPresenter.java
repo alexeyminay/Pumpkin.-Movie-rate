@@ -89,6 +89,7 @@ public class SearchPresenter extends BasePresenter<SearchMVP.SearchView> impleme
                 .observeOn(mResultScheduler)
                 .subscribe(rating -> {
                             this.mRating = rating;
+                            startOpenButtonRevealAnimation();
                             showRating();
                         }, throwable -> showFailResult());
     }
@@ -106,7 +107,6 @@ public class SearchPresenter extends BasePresenter<SearchMVP.SearchView> impleme
                 .append("Год фильма: ")
                 .append(mKinopoiskParser.getFilmYear());
 
-        startOpenButtonRevealAnimation();
         getView().hideProgressBar();
         getView().setClickableButton(true);
         getView().setResult(result.toString());

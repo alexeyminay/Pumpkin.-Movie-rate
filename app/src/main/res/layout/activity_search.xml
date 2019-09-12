@@ -1,31 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.SearchActivity"
     android:orientation="vertical">
-    <EditText
-        android:id="@+id/edit_input"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:hint="@string/input_movie_name"/>
 
-    <Button
-        android:id="@+id/button_search"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="search!"
-        android:background="@color/colorAccent"
-        android:layout_margin="10dp"/>
+    <View
+        android:layout_width="650dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="240dp"
+        android:background="@drawable/shape_view"/>
 
-    <ScrollView
+
+    <Toolbar
+        android:id="@+id/recipe_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="?attr/actionBarSize"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:title="@string/rate_of_films"
+        android:titleTextColor="@color/white"
+        android:elevation="0dp"
+        />
+
+    <LinearLayout
+        android:layout_gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:layout_marginTop="150dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        app:cardCornerRadius="7dp"
+        app:cardElevation="7dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center">
+
+            <EditText
+                android:id="@+id/edit_input_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/shape_edit_text"
+                android:padding="10dp"
+                android:hint="@string/input_movie_name"/>
+
+
+            <EditText
+                android:id="@+id/edit_input_years"
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/shape_edit_text"
+                android:padding="10dp"
+                android:hint="@string/input_year"/>
+
+            <Button
+                android:id="@+id/button_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:text="search!"
+                android:textColor="@color/white"
+                android:background="@drawable/shape_button"
+                android:layout_margin="10dp"/>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 
         <FrameLayout
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="30dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -42,8 +98,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="здесь будет рейтинг"/>
-
+                />
         </FrameLayout>
-    </ScrollView>
-</LinearLayout>
+
+    </LinearLayout>
+</FrameLayout>

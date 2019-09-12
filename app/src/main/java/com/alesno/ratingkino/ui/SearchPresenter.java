@@ -3,24 +3,28 @@ package com.alesno.ratingkino.ui;
 import android.util.Log;
 
 import com.alesno.ratingkino.base.BasePresenter;
+import com.alesno.ratingkino.model.Movie;
 import com.alesno.ratingkino.model.Rating;
-import com.alesno.ratingkino.network.KinopoiskParser;
+import com.alesno.ratingkino.network.KinopoiskHTMLParser;
 import com.alesno.ratingkino.network.KinopoiskRatingRepository;
 
+import java.util.concurrent.Callable;
+
+import io.reactivex.Completable;
 import io.reactivex.Scheduler;
-import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
 
 public class SearchPresenter extends BasePresenter<SearchMVP.SearchView> implements SearchMVP.SearchPresenter {
 
 
     private Disposable mQueryDisposable;
-    private KinopoiskParser mKinopoiskParser;
+    private KinopoiskHTMLParser mKinopoiskParser;
     private KinopoiskRatingRepository.KinopoiskRatingService mKinopoiskRatingService;
     private Scheduler mSubscribeScheduler;
     private Scheduler mResultScheduler;
+    private Rating mRating;
 
-    public SearchPresenter(KinopoiskParser kinopoiskParser,
+    public SearchPresenter(KinopoiskHTMLParser kinopoiskParser,
                            KinopoiskRatingRepository.KinopoiskRatingService mKinopoiskRatingService,
                            Scheduler subscribeScheduler,
                            Scheduler resultScheduler) {
@@ -32,18 +36,22 @@ public class SearchPresenter extends BasePresenter<SearchMVP.SearchView> impleme
 
     @Override
     public void viewIsReady() {
-
+        if(mRating == null) return;
+        showRating();
     }
 
     @Override
     public void onButtonClicked() {
         getView().setResult("");
         getView().showProgressBar();
-        mQueryDisposable = Single.fromCallable(() -> mKinopoiskParser.getIdFilm(getView().getMovieName()))
-                .subscribeOn(mSubscribeScheduler)
+        getView().hideKeyboard();
+
+        mQueryDisposable = Completable.fromCallable((Callable<Void>) () -> {
+            mKinopoiskParser.getHtmlPage(new Movie(getView().getMovieName(), getView().getYear()));
+            return null;
+        }).subscribeOn(mSubscribeScheduler)
                 .observeOn(mResultScheduler)
-                .subscribe(this::getRating,
-                        throwable -> Log.e("mLog", throwable.getMessage(), throwable));
+                .subscribe(() -> getRating(mKinopoiskParser.getIdFilm()));
     }
 
     @Override
@@ -57,17 +65,23 @@ public class SearchPresenter extends BasePresenter<SearchMVP.SearchView> impleme
         mQueryDisposable = mKinopoiskRatingService
                 .getHTMLPage(idFilm).subscribeOn(mSubscribeScheduler)
                 .observeOn(mResultScheduler)
-                .subscribe(rating -> showRating(rating),
+                .subscribe(rating -> {
+                            this.mRating = rating;
+                            showRating();
+                        },
                         throwable -> Log.e("mLog", throwable.getMessage(), throwable));
     }
 
-    private void showRating(Rating rating) {
+    private void showRating() {
         StringBuilder result = new StringBuilder();
         result.append("Kinopoisk: ")
-                .append(rating.getRatingKinopoisk())
+                .append(mRating.getRatingKinopoisk())
                 .append(",\n")
                 .append("IMDb: ")
-                .append(rating.getRatingIMDb());
+                .append(mRating.getRatingIMDb())
+                .append(",\n")
+                .append("Год фильма: ")
+                .append(mKinopoiskParser.getFilmYear());
         getView().hideProgressBar();
         getView().setResult(result.toString());
     }

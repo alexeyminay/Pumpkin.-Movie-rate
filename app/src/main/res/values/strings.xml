@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">RatingKino</string>
     <string name="input_movie_name">Введите название фильма</string>
+    <string name="input_year">Введите год(не обязательно)</string>
+    <string name="rate_of_films">Рейтинг фильмов</string>
 </resources>

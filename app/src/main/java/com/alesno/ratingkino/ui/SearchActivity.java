@@ -4,13 +4,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.alesno.ratingkino.App.App;
 import com.alesno.ratingkino.R;
-import com.alesno.ratingkino.network.KinopoiskParser;
+import com.alesno.ratingkino.network.KinopoiskHTMLParser;
 import com.alesno.ratingkino.network.KinopoiskRatingRepository;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,10 +25,11 @@ import io.reactivex.schedulers.Schedulers;
 public class SearchActivity extends AppCompatActivity implements SearchMVP.SearchView {
 
     @BindView(R.id.progress_bar) ProgressBar mProgressBar;
-    @BindView(R.id.edit_input) EditText mEditInput;
+    @BindView(R.id.edit_input_name) EditText mEditInputName;
+    @BindView(R.id.edit_input_years) EditText mEditInputYear;
     @BindView(R.id.text_result) TextView mTextResult;
 
-    SearchPresenter mPresenter;
+    @Inject SearchPresenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,15 +37,8 @@ public class SearchActivity extends AppCompatActivity implements SearchMVP.Searc
         setContentView(R.layout.activity_search);
         ButterKnife.bind(this);
 
-        KinopoiskParser kinopoiskParser = new KinopoiskParser();
-        KinopoiskRatingRepository.KinopoiskRatingService kinopoiskRatingService =
-                KinopoiskRatingRepository.getRetrofit()
-                        .create(KinopoiskRatingRepository.KinopoiskRatingService.class);
+        App.getApp(this).getSearchActivitySubcomponent().inject(this);
 
-        mPresenter = new SearchPresenter(kinopoiskParser,
-                kinopoiskRatingService,
-                Schedulers.io(),
-                AndroidSchedulers.mainThread());
         mPresenter.attachView(this);
         mPresenter.viewIsReady();
     }
@@ -52,7 +50,12 @@ public class SearchActivity extends AppCompatActivity implements SearchMVP.Searc
 
     @Override
     public String getMovieName() {
-        return mEditInput.getText().toString();
+        return mEditInputName.getText().toString();
+    }
+
+    @Override
+    public String getYear() {
+        return mEditInputYear.getText().toString();
     }
 
     @Override
@@ -60,6 +63,12 @@ public class SearchActivity extends AppCompatActivity implements SearchMVP.Searc
         mTextResult.setText(result);
     }
 
+    @Override
+    public void hideKeyboard() {
+        InputMethodManager inputManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+    
     @Override
     public void showProgressBar() {
         mProgressBar.setVisibility(View.VISIBLE);
@@ -74,5 +83,8 @@ public class SearchActivity extends AppCompatActivity implements SearchMVP.Searc
     protected void onDestroy() {
         super.onDestroy();
         mPresenter.detachView();
+        if(isFinishing()){
+            App.getApp(this).releaseFirstActivityComponent();
+        }
     }
 }

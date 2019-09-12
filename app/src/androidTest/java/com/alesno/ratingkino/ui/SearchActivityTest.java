@@ -2,10 +2,8 @@ package com.alesno.ratingkino.ui;
 
 import android.view.View;
 
-import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
-import androidx.test.espresso.ViewAssertion;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 
@@ -31,7 +29,7 @@ public class SearchActivityTest {
     @Test
     public void checkResult(){
         String requestFilm = "зеленая миля";
-        onView(withId(R.id.edit_input)).perform(replaceText(requestFilm));
+        onView(withId(R.id.edit_input_name)).perform(replaceText(requestFilm));
         onView(withId(R.id.button_search)).perform(click());
         onView(isRoot()).perform(waitFor(3000));
 
